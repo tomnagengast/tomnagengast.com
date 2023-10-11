@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Tom Nagengast</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/yeehaw.png">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=libre-franklin:800" rel="stylesheet" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    minHeight: {
+                        '5': '5em',
+                    },
+                    maxHeight: {
+                        '10': '10em',
+                    },
+                },
+            },
+        }                                                              
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            a {
+                @apply font-bold text-blue-700 text-xl;
+            }
+            
+            .title {
+                font-family: 'Libre Franklin', serif;
+            }
+        
+            .nav-items .link-active {
+                @apply bg-blue-200 text-blue-700;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mx-auto max-w-4xl px-4 lg:px-0 text-gray-800" x-data="{ 
+            codingYears: (new Date).getFullYear() - (new Date('2012-09-01')).getFullYear(),
+            dataYears: (new Date).getFullYear() - (new Date('2014-10-01')).getFullYear()
+        }">
+        <div class="max-w-xl mx-auto">
+            <div class="flex justify-between flex-col sm:flex-row items-center py-8">
+                <a href="/" class="flex items-center space-x-4">
+                    <div class="font-bold text-4xl">Tom Nagengast</div>
+                </a>
+                <div class="space-x-4 pt-2 nav-items">
+                    <a href="/"
+                        class="hover:bg-blue-200 hover:text-blue-700 px-2 py-1 rounded text-base text-gray-500 link-active">
+                        README
+                    </a>
+                </div>
+            </div>
+            <div class="text-7xl font-bold my-4 title">README</div>
+            <div class="text-xl mb-4">
+                I'm <a href="https://twitter.com/tomnagengast">@tomnagengast</a>,
+                a data engineer, full-stack developer, and entrepreneur.
+            </div>
+            <div class="text-xl mb-4">
+                I've been hooked on web development for <span x-text="codingYears"></span> years now
+                and immersed in the data world for almost <span x-text="dataYears"></span> years.
+            </div>
+            <div class="text-xl mb-4">
+                I wasn't always a nerd though - I grew up in the <a href="https://cinquaincellars.com/">wine
+                    industry</a>,
+                got <a href="https://uclabruins.com/sports/track-and-field/roster/thomas-nagengast/1943">pretty good at
+                    sports-ing</a>, and even started my own <a href="https://bajkawine.com">wine label</a> before I
+                turned
+                my attention to the keys.
+            </div>
+            <div class="text-xl mb-4">
+                My path to tech is kind of a long story, but you can <a
+                    href="https://www.getdbt.com/data-careers/tom-nagengast">dive in</a> if you're interested.
+            </div>
+            <div class="text-xl mb-4">
+                Right now, I'm helping drive data at <a href="https://www.replit">Replit</a>
+                and, completely unrelated, trying to make <a href="https://maple.fly.dev">something fun</a>.
+            </div>
+            <!-- <div class="text-xl mb-12">
+                Curious about how I work? Check out my <a href="/users">uses</a> 
+                page for a full list of all the software, gadgets, and services I use.
+            </div> -->
+        </div>
+    </div>
+</body>
+
+</html>
