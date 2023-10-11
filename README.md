@@ -1,3 +1,6 @@
 # tomnagengast.com
 
-Access Replit for this site here: https://replit.com/@tomatreplit/tomnagengastcom
+Resources
+- https://tomnagengast.com
+- https://github.com/tomnagengast/tomnagengast.com
+- https://replit.com/@tomatreplit/tomnagengastcom
