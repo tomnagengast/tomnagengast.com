@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Guides - Tom Nagengast</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/yeehaw.png">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=libre-franklin:800" rel="stylesheet" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    minHeight: {
+                        '5': '5em',
+                    },
+                    maxHeight: {
+                        '10': '10em',
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            a {
+                @apply font-bold text-blue-700 text-xl;
+            }
+
+            .title {
+                font-family: 'Libre Franklin', serif;
+            }
+
+            .nav-items .link-active {
+                @apply bg-blue-200 text-blue-700;
+            }
+        }
+    </style>
+
+    <style>
+        .guide-content h1 { font-size: 1.875rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
+        .guide-content h2 { font-size: 1.5rem; font-weight: 700; margin: 1.25rem 0 0.625rem; }
+        .guide-content h3 { font-size: 1.25rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        .guide-content p { font-size: 1.25rem; margin-bottom: 1rem; }
+        .guide-content ul, .guide-content ol { font-size: 1.25rem; margin-bottom: 1rem; padding-left: 1.5rem; }
+        .guide-content ul { list-style-type: disc; }
+        .guide-content ol { list-style-type: decimal; }
+        .guide-content li { margin-bottom: 0.25rem; }
+        .guide-content a { font-weight: 700; color: rgb(29 78 216); font-size: 1.25rem; }
+        .guide-content strong, .guide-content b { font-weight: 700; }
+        .guide-content em, .guide-content i { font-style: italic; }
+        .guide-content blockquote { border-left: 4px solid #d1d5db; padding-left: 1rem; margin: 1rem 0; color: #6b7280; }
+        .guide-content table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+        .guide-content td, .guide-content th { border: 1px solid #d1d5db; padding: 0.5rem; font-size: 1.25rem; }
+    </style>
+</head>
+
+<body>
+    <div class="container mx-auto max-w-4xl px-4 lg:px-0 text-gray-800" x-data="guidesApp()" x-init="init()">
+        <div class="max-w-xl mx-auto">
+            <div class="flex justify-between flex-col sm:flex-row items-center py-8">
+                <a href="/" class="flex items-center space-x-4">
+                    <div class="font-bold text-4xl">Tom Nagengast</div>
+                </a>
+                <div class="space-x-4 pt-2 nav-items">
+                    <a href="/"
+                        class="hover:bg-blue-200 hover:text-blue-700 px-2 py-1 rounded text-base text-gray-500">
+                        README
+                    </a>
+                    <a href="/guides/"
+                        class="hover:bg-blue-200 hover:text-blue-700 px-2 py-1 rounded text-base text-gray-500 link-active">
+                        Guides
+                    </a>
+                </div>
+            </div>
+
+            <!-- List View -->
+            <template x-if="!currentGuide">
+                <div>
+                    <div class="text-7xl font-bold my-4 title">Guides</div>
+                    <div x-show="loading" class="text-xl mb-4 text-gray-400">Loading...</div>
+                    <div x-show="!loading && guides.length === 0" class="text-xl mb-4 text-gray-400">
+                        No guides yet.
+                    </div>
+                    <div x-show="!loading && guides.length > 0">
+                        <template x-for="guide in guides" :key="guide.slug">
+                            <a :href="'#' + guide.slug"
+                                class="block mb-6 hover:bg-gray-50 -mx-2 px-2 py-2 rounded">
+                                <div class="font-bold text-blue-700 text-xl" x-text="guide.title"></div>
+                                <div class="text-base text-gray-500" x-text="formatDate(guide.updatedAt)"></div>
+                            </a>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Detail View -->
+            <template x-if="currentGuide">
+                <div>
+                    <a href="#" @click.prevent="goBack()"
+                        class="text-base text-gray-500 hover:text-blue-700 mb-4 inline-block">
+                        &larr; All Guides
+                    </a>
+                    <div class="text-7xl font-bold my-4 title" x-text="currentGuide.title"></div>
+                    <div class="text-base text-gray-500 mb-6" x-text="formatDate(currentGuide.updatedAt)"></div>
+                    <div class="guide-content" x-html="currentGuide.body"></div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <script>
+        function guidesApp() {
+            return {
+                guides: [],
+                currentGuide: null,
+                loading: true,
+
+                async init() {
+                    try {
+                        const resp = await fetch('/guides/guides.json?t=' + Date.now());
+                        if (resp.ok) {
+                            const data = await resp.json();
+                            this.guides = data.guides || [];
+                        }
+                    } catch (e) {
+                        console.error('Failed to load guides:', e);
+                        this.guides = [];
+                    }
+                    this.loading = false;
+                    this.handleHash();
+                    window.addEventListener('hashchange', () => this.handleHash());
+                },
+
+                handleHash() {
+                    const hash = window.location.hash.slice(1);
+                    if (hash) {
+                        this.currentGuide = this.guides.find(g => g.slug === hash) || null;
+                    } else {
+                        this.currentGuide = null;
+                    }
+                },
+
+                goBack() {
+                    window.location.hash = '';
+                    this.currentGuide = null;
+                },
+
+                formatDate(iso) {
+                    if (!iso) return '';
+                    const d = new Date(iso);
+                    return d.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
